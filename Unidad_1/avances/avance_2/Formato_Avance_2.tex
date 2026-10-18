@@ -9,6 +9,10 @@
 \usepackage{xcolor}
 \usepackage{fancyhdr}
 \usepackage{hyperref}
+\usepackage{xstring}
+\usepackage{listings}
+\usepackage{xltabular}
+\usepackage{needspace}
 
 \definecolor{verde}{HTML}{174A45}
 \definecolor{gris}{HTML}{475569}
@@ -24,6 +28,19 @@
 \renewcommand{\headrulewidth}{0.4pt}
 \newcommand{\completar}[1]{\textit{\textcolor{gris}{#1}}}
 
+% Nombres de columnas: monoespaciado y con saltos de línea tras el guion bajo
+\newcommand{\var}[1]{\texttt{\StrSubstitute{#1}{_}{\_\allowbreak}}}
+% Grados
+\newcommand{\gr}[1]{$#1^{\circ}$}
+% Tablas estilo APA 7 (número en negrita, título en cursiva, nota al pie)
+\newcommand{\apatabla}[2]{\par\needspace{9\baselineskip}\vspace{6pt}\noindent\textbf{Tabla #1}\par\noindent\textit{#2}\par\vspace{2pt}}
+\newcommand{\apanota}[1]{\par\noindent{\footnotesize\textit{Nota.} #1}\par\vspace{6pt}}
+% Lista de referencias con sangría francesa (APA 7)
+\newenvironment{refsapa}{\begin{list}{}{\setlength{\leftmargin}{1.27cm}\setlength{\itemindent}{-1.27cm}\setlength{\itemsep}{6pt}\setlength{\topsep}{0pt}\setlength{\parsep}{0pt}}\raggedright}{\end{list}}
+
+\lstset{basicstyle=\ttfamily\scriptsize,breaklines=true,columns=fullflexible,frame=single,
+  rulecolor=\color{gris},numbers=left,numberstyle=\tiny\color{gris},keepspaces=true,showstringspaces=false}
+
 \begin{document}
 \hypersetup{pageanchor=false}
 
@@ -37,7 +54,7 @@
 \vspace{1.3cm}
 {\color{verde}\rule{0.82\linewidth}{1.3pt}\par}
 \vspace{0.55cm}
-{\huge\bfseries \completar{Título del proyecto: tema y zona}\par}
+{\huge\bfseries Relieve, accesibilidad y presencia de incendios en la zona norte del cantón Loja, 2019--2024: análisis con Python de 30 celdas de 500 m\par}
 \vspace{0.45cm}
 {\Large Avance 2\par}
 \vspace{0.55cm}
@@ -45,92 +62,230 @@
 \vfill
 \begin{tabular}{rl}
 \textbf{Asignatura:} & Programación y bases de datos\\
-\textbf{Grupo:} & \completar{Número de grupo}\\
-\textbf{Integrantes:} & \completar{Nombres y apellidos completos}\\
- & \completar{Añada filas para todos los integrantes}\\
+\textbf{Grupo:} & 1 (bloque Relieve y accesibilidad, zona norte)\\
+\textbf{Integrantes:} & Jhanine Fernanda Toledo Merino\\
+ & Mayerly Stefanny Moreno Vera\\
+ & Dulce Isabel Barreto Zapata\\
+ & Mateo Joel González Samaniego\\
+\textbf{Docente:} & Carlos Guillermo Chuncho Morocho\\
 \textbf{Período lectivo:} & octubre 2026 -- febrero 2027\\
 \end{tabular}
 \vspace{1cm}
 \end{titlepage}
 \hypersetup{pageanchor=true}
 
+\section*{Resumen}
+Este informe formula el problema, la pregunta, la hipótesis y los objetivos del Grupo 1, que trabaja el bloque de relieve y accesibilidad de la zona norte del cantón Loja con 30 celdas de 500 m y 72 meses entre 2019 y 2024. Las seis variables analíticas son constantes en cada celda, por lo que la unidad efectiva de análisis es la celda. A partir del indicador de incendio de la muestra didáctica (10 celdas con incendio y 20 sin incendio), se pregunta qué diferencias presentan ambos grupos en pendiente, elevación, orientación y distancia a asentamientos y vías. Se plantea que al menos el 70\,\% de las celdas con incendio se ubica en la clase de pendiente de 20\gr{} a menos de 30\gr{}, frente a no más del 40\,\% de las celdas sin incendio. Un programa en Python validará, clasificará y comparará los datos.
+
+\section{Introducción y contexto}
+FIRELAB-Loja es un conjunto de datos ambientales georreferenciados del cantón Loja, organizado en una malla de celdas de 500 m $\times$ 500 m con registros mensuales de 2019 a 2024. Reúne predictores de relieve (ALOS), accesibilidad (GHSL y OpenStreetMap), cobertura del suelo (MAATE), clima (CHIRPS y CHELSA) y vegetación (Sentinel-2), junto con una respuesta de incendios derivada de VIIRS (FIRELAB-Loja, s.\,f.). En el curso, cada grupo trabaja un bloque temático y una zona del cantón con una muestra reducida de celdas (Chuncho Morocho, 2026a). El Grupo 1 trabaja el bloque de relieve y accesibilidad en la zona norte, definida por la regla \var{centro_y_m} $\geq$ 9\,555\,250, con 30 celdas (Chuncho Morocho, 2026a). En esas celdas, la elevación media va de 1\,195 a 3\,648 m y la pendiente media, de 5,9\gr{} a 33,8\gr{} (FIRELAB-Loja, s.\,f.), de modo que el terreno es muy heterogéneo.
+
+El fuego en el Ecuador tiene un componente humano relevante. Carrión-Paladines et al. (2024) estudiaron el uso tradicional del fuego en la costa, la sierra y la Amazonía mediante entrevistas a 791 integrantes de cinco comunidades y evaluaron la severidad de los incendios de 2019 a 2022 con el índice NBR; encontraron coincidencia entre el conocimiento tradicional, los datos climáticos y muchos incendios, en su mayoría de baja severidad. En los Andes ecuatoriales, Zapata-Rios et al. (2021) identificaron la pendiente, la orientación y la distancia a vías y áreas urbanas entre las variables más importantes para explicar la distribución espacial y temporal del fuego. Estos antecedentes justifican describir cómo se comportan el relieve y la accesibilidad en las celdas donde se registró fuego, sin atribuirles un efecto causal.
+
 \section{Problema de investigación}
 \subsection{Descripción del problema}
-Describan la situación concreta relacionada con el tema y la zona asignada. Organicen el texto así:
 \begin{enumerate}
-  \item Situación territorial o ambiental que se analizará.
-  \item Vacío de información o dificultad específica.
-  \item Relevancia del problema, sin atribuir a la base efectos que no mide.
-  \item Oportunidad de responderlo con el archivo, variables y análisis del grupo.
+  \item \textbf{Situación.} La zona norte de Loja combina cotas y pendientes muy distintas (sección 1) y celdas que están cerca o lejos de asentamientos y vías. Según la bibliografía, estas características se asocian con la ocurrencia de fuego en los Andes (Zapata-Rios et al., 2021).
+  \item \textbf{Vacío o dificultad.} La base del Grupo 1 (\var{equipo_01_relieve_norte.csv}) no contiene fechas ni eventos de incendio: solo describe relieve y accesibilidad. El único vínculo con el fuego es el indicador binario por celda \var{tiene_incendio_2019_2024} de la muestra didáctica (Chuncho Morocho, 2026b), que marca 10 de las 30 celdas con incendio. No se sabe si esas 10 celdas difieren en relieve y accesibilidad de las 20 restantes, y comprobarlo a mano exige revisar 2\,160 registros, de los cuales 72 por celda repiten los mismos valores de relieve.
+  \item \textbf{Relevancia.} Una descripción comparativa de ambos grupos permite saber qué rasgos del terreno y de acceso se observan en las celdas con incendio dentro de la muestra. Se trata de una descripción, no de una explicación causal: la base no mide las causas ni la intensidad del fuego.
+  \item \textbf{Oportunidad.} Un programa en Python puede validar la base, consolidarla en una tabla de 30 celdas, clasificar la pendiente y comparar los dos grupos de forma reproducible.
 \end{enumerate}
 
-\completar{Redacte aquí el problema con datos de contexto y citas cuando corresponda. Sustituya estas instrucciones antes de entregar.}
-
 \subsection{Pregunta de investigación}
-Formulen una pregunta única, clara y respondible con cálculos sobre la base. Incluyan variable o fenómeno, zona y período 2019--2024.
-
-\textbf{Pregunta:} \completar{Escriba aquí la pregunta de investigación.}
+\textbf{Pregunta:} ¿Qué diferencias presentan en pendiente, elevación, orientación (\emph{northness} y \emph{eastness}) y distancia a asentamientos y a vías las 10 celdas de 500 m con incendio registrado frente a las 20 celdas sin incendio de la zona norte del cantón Loja entre 2019 y 2024?
 
 \subsection{Hipótesis}
-Escriban una afirmación contrastable que adelante una respuesta. Indiquen variable, zona, período, indicador y criterio cuantitativo. No usen expresiones sin definir como «mucho», «normal» o «afecta».
+\textbf{Hipótesis:} Si las 30 celdas de la zona norte del cantón Loja se clasifican según \var{alos_pendiente_grados_mean} en cuatro clases (C1: menos de 10\gr{}; C2: de 10\gr{} a menos de 20\gr{}; C3: de 20\gr{} a menos de 30\gr{}; C4: 30\gr{} o más), entonces al menos el 70\,\% de las celdas con incendio (7 de 10) se ubicará en la clase C3, mientras que no más del 40\,\% de las celdas sin incendio (8 de 20) estará en esa clase, medido con la proporción de celdas por clase de pendiente en el periodo 2019--2024.
 
-\textbf{Hipótesis:} \completar{Escriba aquí una afirmación medible y verificable con la base.}
+La variable de la hipótesis se eligió tras la exploración preliminar (sección 4.3), y los umbrales de 70\,\% y 40\,\% se fijan antes del contraste. Por tratarse de solo 10 celdas con incendio, se presentará como hipótesis exploratoria y no se generalizará al cantón.
 
 \section{Objetivos}
 \subsection{Objetivo general}
-Debe responder directamente la pregunta e indicar qué se analizará, dónde, con qué datos y en qué período.
-
-\textbf{Objetivo general:} \completar{Escriba un objetivo general con verbo en infinitivo.}
+\textbf{Objetivo general:} Determinar las diferencias en la pendiente, la elevación, la orientación y la distancia a asentamientos y a vías entre las celdas con incendio y sin incendio de la zona norte del cantón Loja durante 2019--2024, mediante un programa en Python aplicado a \var{equipo_01_relieve_norte.csv} y al indicador \var{tiene_incendio_2019_2024}.
 
 \subsection{Objetivos específicos}
-Incluyan máximo tres objetivos. Cada uno debe ser medible, aportar al objetivo general y producir una salida verificable; redacten objetivos, no tareas.
 \begin{enumerate}
-  \item \completar{Objetivo específico 1 y su salida verificable.}
-  \item \completar{Objetivo específico 2 y su salida verificable.}
-  \item \completar{Objetivo específico 3 (opcional) y su salida verificable.}
+  \item \textbf{OE1.} Validar la estructura, el periodo, la regla de zona y la calidad (valores faltantes y cobertura) de los 2\,160 registros de la base asignada, y consolidarlos en una tabla de 30 celdas (una fila por \var{cell_id}), comprobando que los valores repetidos de los 72 meses sean consistentes. \emph{Salida:} tabla de validación y tabla de 30 celdas con un valor por variable.
+  \item \textbf{OE2.} Clasificar las 30 celdas en cuatro clases de pendiente, mediante una clasificación con límites configurables, y calcular la media, la mediana y la desviación estándar de las seis variables analíticas para las celdas con y sin incendio. \emph{Salida:} tabla de conteo por clase y grupo, y tabla de estadísticos descriptivos.
+  \item \textbf{OE3.} Comparar los dos grupos mediante la proporción de celdas por clase de pendiente y representar la distribución de las seis variables en diagramas de caja. \emph{Salida:} figura por variable y resultado numérico que confirma o refuta la hipótesis.
 \end{enumerate}
 
 \section{Metodología}
 \subsection{Zona de estudio y fuente de datos}
-Indiquen cantón, zona, período, nombre exacto del CSV y unidad de observación. Expliquen cómo comprobarán que la base corresponde a su asignación. Las bases ya vienen separadas por grupo: no las unan ni vuelvan a dividir. La muestra didáctica describe únicamente las celdas entregadas, no una estimación oficial de todo el cantón. El archivo CSV es de solo lectura.
+El estudio se realiza en el cantón Loja, zona norte, con la base asignada al grupo. Para comprobar que la base corresponde a la asignación, el programa verificará que todas las filas cumplan \var{centro_y_m} $\geq$ 9\,555\,250, que el periodo esté entre 2019-01 y 2024-12, y que el número de filas, celdas y columnas coincida con el manifiesto de las bases (Chuncho Morocho, 2026b). La base no se une ni se vuelve a dividir. La muestra describe únicamente las celdas entregadas, no una estimación oficial del cantón, y el archivo CSV es de solo lectura.
 
-\textbf{Grupo y tema:} \completar{Número de grupo y bloque temático.}\\
-\textbf{Zona:} \completar{Norte, sur o Loja completo; explique la regla aplicable.}\\
-\textbf{Archivo asignado:} \completar{Nombre exacto del CSV.}\\
-\textbf{Período y observación:} \completar{2019--2024; celda de 500 m en un mes, u otra precisión pertinente.}
+\textbf{Grupo y tema:} Grupo 1; bloque Relieve y accesibilidad.\\
+\textbf{Zona:} norte; celdas con \var{centro_y_m} $\geq$ 9\,555\,250.\\
+\textbf{Archivo asignado:} \var{equipo_01_relieve_norte.csv} (2\,160 registros, 30 celdas, 15 columnas).\\
+\textbf{Archivo auxiliar:} \var{muestra_celdas_didactica.csv}, solo para completar la base con el indicador \var{tiene_incendio_2019_2024},(Chuncho Morocho, 2026b).\\
+\textbf{Período y observación:} 2019--2024; celda de 500 m en un mes (72 meses por celda). Como las variables de relieve y accesibilidad no cambian entre meses (sección 4.3), la unidad efectiva de análisis es la celda ($n = 30$).
 
 \subsection{Variables seleccionadas}
-Completen con los nombres exactos de columnas del CSV asignado y consulten significado y unidad en \texttt{DICCIONARIO\_VARIABLES.csv}. Incluyan solo variables que se usarán para responder la pregunta y distingan variables analíticas de controles de calidad.
 
+\apatabla{1}{Variables usadas en el análisis del Grupo 1}
 \small
-\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{4.0cm} X >{\raggedright\arraybackslash}p{2.1cm} >{\raggedright\arraybackslash}p{1.7cm} >{\raggedright\arraybackslash}p{2.2cm}}
+\begin{xltabular}{\linewidth}{>{\raggedright\arraybackslash}p{3.8cm} X >{\raggedright\arraybackslash}p{2.25cm} >{\raggedright\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{2.0cm}}
 \toprule
 \textbf{Variable (columna)} & \textbf{Significado} & \textbf{Unidad de medida} & \textbf{Tipo} & \textbf{Uso en el análisis}\\
 \midrule
-\completar{Nombre exacto} & \completar{Definición según el diccionario} & \completar{Unidad} & \completar{Tipo} & \completar{Analítica o control}\\
-\completar{Nombre exacto} & \completar{Definición según el diccionario} & \completar{Unidad} & \completar{Tipo} & \completar{Analítica o control}\\
-\completar{Nombre exacto} & \completar{Definición según el diccionario} & \completar{Unidad} & \completar{Tipo} & \completar{Analítica o control}\\
+\endfirsthead
+\toprule
+\textbf{Variable (columna)} & \textbf{Significado} & \textbf{Unidad de medida} & \textbf{Tipo} & \textbf{Uso en el análisis}\\
+\midrule
+\endhead
+\var{cell_id} & Identificador de la celda de 500 m (fila R, columna C de la malla) & texto & str & Identificador\\
+\var{centro_y_m} & Coordenada Y (norte) del centro de la celda en UTM; define la zona & m & float & Control de zona\\
+\var{anio_mes} & Año y mes del registro (AAAA-MM) & texto & str & Control de periodo\\
+\var{alos_elevacion_m_mean} & Elevación media de la celda (modelo digital ALOS) & m & float & Analítica\\
+\var{alos_pendiente_grados_mean} & Pendiente media del terreno & grados & float & Analítica (clases C1 a C4)\\
+\var{alos_northness_mean} & Coseno de la orientación; 1 = ladera hacia el norte, $-1$ = hacia el sur & adimensional & float & Analítica\\
+\var{alos_eastness_mean} & Seno de la orientación; 1 = ladera hacia el este, $-1$ = hacia el oeste & adimensional & float & Analítica\\
+\var{ghsl_distancia_asentamiento_m_mean} & Distancia media al asentamiento (zona construida) más cercano, según GHSL & m & float & Analítica\\
+\var{osm_distancia_vias_m_mean} & Distancia media a la vía más cercana, según OpenStreetMap & m & float & Analítica\\
+\var{alos_elevacion_m_coverage} & Fracción de la celda con dato válido de ALOS & fracción & float & Control de calidad\\
+\var{ghsl_distancia_asentamiento_m_coverage} & Fracción de la celda con dato válido de GHSL & fracción & float & Control de calidad\\
+\var{osm_distancia_vias_m_coverage} & Fracción de la celda con dato válido de OSM & fracción & float & Control de calidad\\
+\var{tiene_incendio_2019_2024} & Indicador por celda de incendio en 2019--2024 (1 = celda con al menos un incendio válido; 0 = sin incendio) & código & int & Grupo de comparación\\
+\bottomrule
+\end{xltabular}
+\normalsize
+\apanota{Elaboración propia con base en el diccionario de variables y la muestra didáctica (Chuncho Morocho, 2026b). El indicador \var{tiene_incendio_2019_2024} se toma del archivo auxiliar \var{muestra_celdas_didactica.csv}, que complementa la base asignada con autorización del docente. Según el README, la muestra se formó con 10 celdas con al menos un incendio válido y 20 sin incendio (Chuncho Morocho, 2026b).}
+
+\subsection{Exploración preliminar y procedimiento}
+
+\begin{itemize}
+  \item \textbf{Filas y columnas revisadas:} 2\,160 filas y 15 columnas, que corresponden a 30 celdas $\times$ 72 meses (360 registros por año, de 2019 a 2024), sin pares (\var{cell_id}, \var{anio_mes}) duplicados. Coincide con el manifiesto.
+  \item \textbf{Filas de ejemplo consultadas:} las tres primeras filas del archivo y dos filas posteriores de una misma celda, para comprobar si los valores cambian entre meses (Tabla 2).
+  \item \textbf{Tres hechos observados:}
+  \begin{enumerate}
+    \item Las seis variables analíticas son constantes dentro de cada celda: el máximo de valores distintos por celda es 1. Los 72 registros mensuales de una celda repiten el mismo relieve y la misma accesibilidad, por lo que no son observaciones independientes y el análisis se hace con $n = 30$ celdas.
+    \item Faltan \var{ghsl_distancia_asentamiento_m_mean} y \var{osm_distancia_vias_m_mean} en 72 registros, todos de la celda \var{LJ500_R108_C065}, cuya cobertura de esas capas es 0. Esa misma celda tiene cobertura ALOS de 0,54; la otra celda con cobertura ALOS menor de 0,90 es \var{LJ500_R184_C039} (0,71). Las distancias se comparan, por tanto, con 29 celdas.
+    \item Hay 10 celdas con incendio y 20 sin incendio. Al clasificar la pendiente media, 9 de las 10 celdas con incendio y 6 de las 20 sin incendio caen en la clase C3 (Tabla 3).
+  \end{enumerate}
+  \item \textbf{Control de periodo, zona, faltantes y disponibilidad:} el periodo va de 2019-01 a 2024-12 (72 meses); las 2\,160 filas cumplen \var{centro_y_m} $\geq$ 9\,555\,250 (una celda está exactamente en el límite y se incluye por la regla $\geq$); no hay datos de 2025; los únicos valores vacíos son los 72 registros descritos en el hecho 2.
+\end{itemize}
+
+\apatabla{2}{Filas de ejemplo de equipo\_01\_relieve\_norte.csv}
+\small
+\begin{tabular}{llrrr}
+\toprule
+\textbf{cell\_id} & \textbf{anio\_mes} & \textbf{Elevación (m)} & \textbf{Pendiente (\gr{})} & \textbf{Dist. a vías (m)}\\
+\midrule
+LJ500\_R108\_C065 & 2019-01 & 2608,83 & 32,12 & vacío\\
+LJ500\_R109\_C088 & 2019-01 & 2662,52 & 32,80 & 2341,75\\
+LJ500\_R119\_C079 & 2019-01 & 2115,91 & 17,82 & 123,83\\
+LJ500\_R109\_C088 & 2021-07 & 2662,52 & 32,80 & 2341,75\\
+LJ500\_R109\_C088 & 2024-12 & 2662,52 & 32,80 & 2341,75\\
+\bottomrule
+\end{tabular}
+\normalsize
+\apanota{Elaboración propia con base en \var{equipo_01_relieve_norte.csv}. Las filas 2, 4 y 5 corresponden a la misma celda y tienen valores idénticos en meses distintos.}
+
+\apatabla{3}{Rango observado de las variables analíticas y celdas por clase de pendiente}
+\small
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}X r r r}
+\toprule
+\textbf{Variable (30 celdas)} & \textbf{Mínimo} & \textbf{Mediana} & \textbf{Máximo}\\
+\midrule
+\var{alos_elevacion_m_mean} (m) & 1194,66 & 2621,23 & 3647,59\\
+\var{alos_pendiente_grados_mean} (\gr{}) & 5,92 & 23,64 & 33,75\\
+\var{alos_northness_mean} & $-0{,}79$ & $-0{,}13$ & 0,77\\
+\var{alos_eastness_mean} & $-0{,}87$ & $-0{,}31$ & 0,90\\
+\var{ghsl_distancia_asentamiento_m_mean} (m; 29 celdas) & 8,00 & 1786,06 & 5199,04\\
+\var{osm_distancia_vias_m_mean} (m; 29 celdas) & 77,66 & 1587,48 & 6330,27\\
+\bottomrule
+\end{tabularx}
+
+\vspace{6pt}
+\begin{tabular}{lrr}
+\toprule
+\textbf{Clase de pendiente} & \textbf{Sin incendio} & \textbf{Con incendio}\\
+\midrule
+C1 (menos de 10\gr{}) & 1 & 0\\
+C2 (10\gr{} a menos de 20\gr{}) & 7 & 1\\
+C3 (20\gr{} a menos de 30\gr{}) & 6 & 9\\
+C4 (30\gr{} o más) & 6 & 0\\
+\midrule
+Total de celdas & 20 & 10\\
+\bottomrule
+\end{tabular}
+\normalsize
+\apanota{Elaboración propia con base en \var{equipo_01_relieve_norte.csv} y \var{muestra_celdas_didactica.csv}. Las clases de pendiente son un criterio operativo del grupo y sus límites se justificarán en la Unidad 2. Resultado exploratorio, no un contraste de la hipótesis.}
+
+\subsection{Procedimiento por objetivo}
+
+\begin{itemize}
+  \item \textbf{OE1.}Todas las columnas de la Tabla 1 excepto el indicador de incendio. \emph{Criterios:} regla de zona, periodo, ausencia de duplicados, valores faltantes y cobertura (se marcan las celdas con cobertura menor de 0,90). \emph{Cálculo:} conteo de registros iniciales, aceptados y descartados, y reducción a un valor por celda. \emph{Salida:} tablas de validación y de 30 celdas. \emph{Estado:} verificaciones realizadas en la exploración; funciones y pruebas, planificadas.
+  \item \textbf{OE2.}La tabla de 30 celdas y el indicador de incendio. \emph{Criterios:} clases C1 a C4 con los límites de la hipótesis; las celdas sin dato se excluyen solo de la variable que les falta. \emph{Cálculo:} conteo por clase y grupo; media, mediana y desviación estándar por grupo. \emph{Salida:} tablas de conteo y de estadísticos. \emph{Estado:} conteo por clase realizado de forma exploratoria; estadísticos por grupo, planificados.
+  \item \textbf{OE3.}Resultados de OE2. \emph{Cálculo:} proporción de celdas en C3 por grupo y comparación con los umbrales de 70\,\% y 40\,\%; sensibilidad a cambios en los límites de clase. \emph{Salida:} diagramas de caja con título, unidades, periodo y zona, y decisión sobre la hipótesis. \emph{Estado:} planificado para la Unidad 3.
+\end{itemize}
+
+\section{Alcance y limitaciones}
+\textbf{Incluye:} la zona norte del cantón Loja; las 30 celdas de \var{equipo_01_relieve_norte.csv}; el periodo 2019--2024; las seis variables analíticas de la Tabla 1; y el indicador de incendio por celda.
+
+\textbf{No incluye:} datos de 2025, reservados para validación externa; la zona sur ni otras bases de grupos; variables de clima, cobertura o incendios mensuales; la identificación de causas del fuego; ni la extrapolación a todo el cantón.
+
+\textbf{Limitaciones:}
+\begin{itemize}
+  \item Los grupos son pequeños (10 y 20 celdas), por lo que cualquier diferencia es frágil y no se aplicará inferencia al cantón.
+  \item El indicador de incendio es binario por celda: no indica el mes, la cantidad ni la intensidad de los eventos, por lo que no permite estudiar su distribución mensual o anual.
+  \item El relieve y la accesibilidad son estáticos en la base; los 72 meses no aportan variación.
+  \item Una celda carece de distancias y dos tienen cobertura ALOS baja (celdas de borde).
+  \item Los valores numéricos de la base están redondeados (2 decimales si el valor es 10 o mayor; 4 si es menor), según el README (Chuncho Morocho, 2026b).
+\end{itemize}
+
+\section{Ajustes realizados tras la retroalimentación}
+\small
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{3.1cm} X >{\raggedright\arraybackslash}p{2.0cm}}
+\toprule
+\textbf{Criterio revisado} & \textbf{Ajuste realizado en esta versión} & \textbf{Sección}\\
+\midrule
+Portada y resumen & Título específico con bloque, zona y periodo; resumen de contenido en lugar de texto de plantilla. & Portada, Resumen\\
+Introducción y contexto & Propósito de FIRELAB-Loja, vínculo con la zona y el bloque asignados, y citas APA. & 1\\
+Planteamiento del problema & Se precisan el fenómeno, la zona, la base y las variables; se retira la cita sin formato y se citan fuentes verificables. & 2.1\\
+Pregunta de investigación & Se nombran los eventos (celdas con incendio), la zona y el periodo. La pregunta anterior sobre la distribución mensual y anual de incendios no puede responderse con esta base, que no contiene fechas de incendio, por lo que se reformuló. & 2.2\\
+Hipótesis & Se eliminan los marcadores pendientes; se definen indicador y umbral. & 2.3\\
+Objetivo general y específicos & Se completan objeto, zona, datos y herramienta, y cada objetivo tiene una salida verificable. & 3\\
+Datos y variables; alcance; matriz & Secciones nuevas con base, periodo, zona, unidad de observación, tabla de variables, límites y matriz de coherencia. & 4.1--4.2, 5, 7\\
+Referencias & Lista APA 7 con correspondencia entre citas y entradas. & Referencias\\
+Evidencia propia & Exploración real del CSV, con filas, hechos y control de calidad; uso de IA declarado. & 4.3, Anexos\\
 \bottomrule
 \end{tabularx}
 \normalsize
 
-\subsection{Exploración preliminar y procedimiento}
-Registren qué se hizo y qué se encontró al revisar el CSV, sin modificarlo:
-\begin{itemize}
-  \item Filas y columnas revisadas: \completar{indique conteos observados}.
-  \item Filas de ejemplo consultadas: \completar{indique cómo se seleccionaron; adjunte una tabla breve si es necesario}.
-  \item Tres hechos observados: \completar{describa hechos verificables en variables concretas}.
-  \item Control de periodo, zona, valores faltantes y disponibilidad: \completar{explique qué verificó}.
-\end{itemize}
+\section{Matriz de coherencia}
+\apatabla{4}{Matriz de coherencia del Grupo 1}
+\small
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{2.2cm} X >{\raggedright\arraybackslash}p{4.4cm}}
+\toprule
+\textbf{Elemento} & \textbf{Redacción del grupo} & \textbf{¿Se puede verificar con la base asignada?}\\
+\midrule
+Problema & Se desconoce si las celdas con incendio de la zona norte difieren en relieve y accesibilidad de las celdas sin incendio, y comprobarlo a mano implica revisar 2\,160 registros repetitivos. & Sí: la base tiene las seis variables y el indicador de incendio por celda.\\
+Pregunta & ¿Qué diferencias presentan en pendiente, elevación, orientación y distancia a asentamientos y vías las celdas con incendio frente a las sin incendio en la zona norte de Loja entre 2019 y 2024? & Sí: se responde con estadísticos y conteos de 30 celdas.\\
+Hipótesis & Al menos el 70\,\% de las celdas con incendio y no más del 40\,\% de las celdas sin incendio se ubican en la clase de pendiente de 20\gr{} a menos de 30\gr{}. & Sí: proporciones por clase y grupo (criterio numérico).\\
+Objetivo general & Determinar las diferencias en relieve y accesibilidad entre celdas con y sin incendio con un programa en Python, 2019--2024. & Sí: con los resultados de OE1 a OE3.\\
+OE1 & Validar estructura, periodo, zona y calidad, y consolidar 30 celdas. & Salida esperada: tabla de validación y tabla de 30 celdas.\\
+OE2 & Clasificar la pendiente en cuatro clases y calcular estadísticos por grupo. & Salida esperada: tabla de conteo por clase y grupo, y tabla de estadísticos.\\
+OE3 & Comparar los grupos y representarlos en diagramas de caja. & Salida esperada: figuras y decisión sobre la hipótesis.\\
+\bottomrule
+\end{tabularx}
+\normalsize
+\apanota{Elaboración propia.}
 
-Expliquen, en correspondencia con cada objetivo, las columnas de entrada, filtros o criterios de calidad, cálculo previsto y salida verificable. Diferencien las acciones realizadas de las que quedan planificadas. No incorporen datos de 2025 ni sumen ventanas móviles solapadas como si fueran independientes.
-
-\subsection{Fuentes y referencias}
-Citen las fuentes usadas para contextualizar el problema y documenten la base y el diccionario compartidos. Mantengan correspondencia entre citas en el texto y referencias; apliquen APA 7.
-
-\begin{itemize}
-  \item \completar{Autor o institución. (Año). Título. URL o datos de publicación.}
-  \item \completar{Agregue las fuentes realmente consultadas.}
-\end{itemize}
+\section*{Referencias}
+\addcontentsline{toc}{section}{Referencias}
+\begin{refsapa}
+\item Carrión-Paladines, V., Correa-Quezada, L., Valdiviezo Malo, H., Zurita Ruáles, J., Pereddo Tumbaco, A., Zambrano Pisco, M., Lucio Panchi, N., Jiménez Álvarez, L., Benítez, Á., y Loján-Córdova, J. (2024). Exploring the ethnobiological practices of fire in three natural regions of Ecuador, through the integration of traditional knowledge and scientific approaches. \textit{Journal of Ethnobiology and Ethnomedicine, 20}(1), Artículo 60. \url{https://doi.org/10.1186/s13002-024-00699-4}
+\item Chuncho Morocho, C. G. (2026a). \textit{Guía del proyecto integrador: Programación y Base de Datos} [Documento del curso]. Universidad Nacional de Loja.
+\item Chuncho Morocho, C. G. (2026b). \textit{Informacion\_programacion} [Repositorio de GitHub; bases de datos del proyecto integrador, diccionario de variables, manifiesto y muestra de celdas]. GitHub. \url{https://github.com/cguillermo79/Informacion_programacion}
+\item FIRELAB-Loja. (s.\,f.). \textit{FIRELAB-Loja} (Versión 1.1.0) [Conjunto de datos].
+\item McKinney, W. (2010). Data structures for statistical computing in Python. En S. van der Walt y J. Millman (Eds.), \textit{Proceedings of the 9th Python in Science Conference} (pp. 56--61). \url{https://doi.org/10.25080/Majora-92bf1922-00a}
+\item Zapata-Rios, X., Lopez-Fabara, C., Navarrete, A., Torres-Paguay, S., y Flores, M. (2021). Spatiotemporal patterns of burned areas, fire drivers, and fire probability across the equatorial Andes. \textit{Journal of Mountain Science, 18}(4), 952--972. \url{https://doi.org/10.1007/s11629-020-6402-y}
+\end{refsapa}
+\begin{lstlisting}[language=Python]
+\end{lstlisting}
+\section*{Anexo B. Uso de inteligencia artificial}
+\addcontentsline{toc}{section}{Anexo B. Uso de inteligencia artificial}
+Se usó un asistente de IA (Claude, de Anthropic) como apoyo para organizar el informe en LaTeX, revisar la redacción, redactar un borrador del script de exploración y comprobar las cifras reportadas. Los resultados se verificaron ejecutando el script sobre el CSV asignado y contrastándolo con el manifiesto, y el grupo es responsable del contenido y puede explicar cada sección y cada línea del código. \completar{Confirmen o ajusten esta declaración con lo que realmente hizo cada integrante.}
 
 \end{document}
